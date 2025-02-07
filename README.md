@@ -1,18 +1,54 @@
-## Getting Started
+# Java Email Sender (Without Maven)
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+## Overview
+This project allows you to send emails using **Jakarta Mail (JavaMail API)** in a standalone Java program without using Maven or Gradle.
 
-## Folder Structure
+## Prerequisites
+- Java Development Kit (JDK) installed (Java 8 or later)
+- VS Code with Java Extension Pack
+- Internet connection (for sending emails via SMTP)
 
-The workspace contains two folders by default, where:
+## Project Structure
+```
+JavaEmailSender/
+├── src/
+│   ├── Mail.java
+├── lib/
+│   ├── jakarta.mail-2.0.1.jar
+├── .vscode/
+├── README.md
+```
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## Setup Instructions
+### 1. Download Jakarta Mail Library
+- Download `jakarta.mail-2.0.1.jar` from [Maven Repository](https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail)
+- Place the JAR file inside the `lib/` folder
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+### 2. Configure Classpath in VS Code
+#### Option 1: Using VS Code Settings
+1. Open **Command Palette** (`Ctrl + Shift + P`).
+2. Search for **"Java: Configure Runtime"** and select it.
+3. Click **"Edit"** and add the path to `lib/jakarta.mail-2.0.1.jar`.
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+#### Option 2: Compile and Run via Terminal
+```sh
+javac -cp ".;lib/jakarta.mail-2.0.1.jar" src/Mail.java
+java -cp ".;lib/jakarta.mail-2.0.1.jar" src.Mail
+```
+_(Use `:` instead of `;` in macOS/Linux)_
 
-## Dependency Management
+## How to Use
+1. Open `Mail.java` and configure your SMTP details:
+   ```java
+   final String myAccEmail = "your-email@example.com";
+   final String myAccPass = "your-email-password";
+   ```
+2. Run the program to send an email!
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## Troubleshooting
+- **Error: `javax.mail does not exist`** → Ensure the JAR file is correctly added to the classpath.
+- **Authentication Issues** → Enable "Less Secure Apps" or generate an App Password in Gmail/Outlook.
+
+## License
+This project is open-source and free to use.
+
