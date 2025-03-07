@@ -293,36 +293,41 @@ public class Mail extends JFrame {
         conn.setDoOutput(true);
     
         try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = data.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-    
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) {
-            throw new RuntimeException("HTTP Response Code: " + responseCode);
-        }
-    
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
-            StringBuilder response = new StringBuilder();
-            String responseLine;
-            while ((responseLine = br.readLine()) != null) {
-                response.append(responseLine.trim());
-            }
-            return response.toString();
-        }
+                  byte[] input = data.getBytes("utf-8");
+        os.write(input, 0, input.length);
     }
-    
 
-
-
-    public static boolean isValid(String email) {
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z" + "A-Z]{2,7}$";
-
-        Pattern pat = Pattern.compile(emailRegex); // Compile the regex into a pattern
-        if (email == null)
-            return false;
-        return pat.matcher(email).matches();
+    int responseCode = conn.getResponseCode();
+    if (responseCode != 200) {
+        throw new RuntimeException("HTTP Response Code: " + responseCode);
     }
+
+    // Read the response from the API
+    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+    StringBuilder response = new StringBuilder();
+    String line;
+    while ((line = in.readLine()) != null) {
+        response.append(line);
+    }
+    in.close();
+
+    // Extract the generated text from the response
+    String responseStr = response.toString();
+    int startIndex = responseStr.indexOf("\"text\":\"") + 8;
+    int endIndex = responseStr.indexOf("\",", startIndex);
+
+    if (startIndex != -1 && endIndex != -1) {
+        return responseStr.substring(startIndex, endIndex);
+    } else {
+        throw new IOException("Unexpected API response format.");
+    }
+}
+
+public static boolean isValid(String email) {
+    String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+    return Pattern.compile(emailRegex).matcher(email).matches();
+}
+
 
     public static void main(String[] args) {
         new Mail();
